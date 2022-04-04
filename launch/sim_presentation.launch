@@ -1,0 +1,7 @@
+<!--
+    This starts a presentation for the project on simulated rosbots in Gazebo.
+    Assumes gazebo is spawned with three robots (run sim_nav_base.sh first) 
+-->
+
+<launch>
+</launch>
