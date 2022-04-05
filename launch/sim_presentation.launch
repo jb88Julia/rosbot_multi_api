@@ -4,4 +4,5 @@
 -->
 
 <launch>
+    <node name="mission_control" pkg="rosbot_multi_api" type="mission_control.py" respawn="true" />
 </launch>
