@@ -52,6 +52,8 @@ def main():
 
     # Start mission
     rospy.loginfo("Starting mission... Robot 2 getting lost")
+    r2_lost_params = rospy.get_param("lost_coords")
+    rospy.loginfo("Going to %d , %d , %d ", r2_lost_params.get("x"),  r2_lost_params.get("y"),  r2_lost_params.get("z"))
     
 
     rospy.spin()

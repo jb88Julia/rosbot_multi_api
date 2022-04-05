@@ -4,5 +4,6 @@
 -->
 
 <launch>
+    <rosparam file="$(find rosbot_multi_api)/config/coordinates.yaml" />
     <node name="mission_control" pkg="rosbot_multi_api" type="mission_control.py" respawn="true" />
 </launch>

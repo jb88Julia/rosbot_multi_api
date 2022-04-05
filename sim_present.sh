@@ -6,4 +6,4 @@ sleep 1
 #starts Mission Control server:
 #echo "Launching presentation sequence ..."
 #gnome-terminal -- roslaunch rosbot_multi_api .launchsim_presentation
-gnome-terminal -- roslaunch rosbot_multi_api sim_presentation.launch
+gnome-terminal -- roslaunch rosbot_multi_api sim_presentation.launch --screen
