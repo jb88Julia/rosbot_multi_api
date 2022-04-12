@@ -27,13 +27,14 @@ class RobotCore:
     node_name = None
     mb_client = None
     status = None
-    current_path = Queue(maxsize=20)
+    current_path = None
 
     def __init__(self, robot_name:str) -> None:
         
         self.robot_name = robot_name
         self.node_name =  robot_name+'_core'
         self.status =Robot_State.idle
+        self.current_path = Queue(maxsize=20)
 
         # create the connections to the Move Base action server
         self.connect_move_base()
@@ -62,6 +63,7 @@ class RobotCore:
         for goal_dict in goals_list:
             new_goal = self.newGoal(goal_dict)
             self.current_path.put_nowait(new_goal)
+            #rospy.logwarn("puttin x: %s and y:%s in queue for %s", str(goal_dict.get("x")),str(goal_dict.get("y")), self.robot_name)
 
     def add_one_goal(self, goal:dict):
         new_goal = self.newGoal(goal)
@@ -131,14 +133,18 @@ class Mission():
         r3_rescue_path = [rospy.get_param("r3_goal1"), rospy.get_param("r3_goal2")]
 
         self.r1.add_many_goals(r1_rescue_path)
-        self.r2.add_many_goals(r3_rescue_path)
+        self.r3.add_many_goals(r3_rescue_path)
 
         self.r1.status = Robot_State.searching
         self.r3.status = Robot_State.searching
 
         try:
+            #r1g=self.r1.get_next_goal()
             self.r1.mb_client.send_goal(self.r1.get_next_goal(), done_cb= self.r1_goal_reached)
+            #rospy.logwarn("Sending R1 to %s, %s", str(r1g.target_pose.pose.position.x), str(r1g.target_pose.pose.position.y))
+            #r3g=self.r3.get_next_goal()
             self.r3.mb_client.send_goal(self.r3.get_next_goal(), done_cb= self.r3_goal_reached)
+            #rospy.logwarn("Sending R3 to %s, %s", str(r3g.target_pose.pose.position.x), str(r3g.target_pose.pose.position.y))
         except queue.Empty:
             rospy.logfatal("No plan for rescue specified")
 
@@ -146,7 +152,10 @@ class Mission():
         rospy.logwarn("R1 reached the one of the goals")
 
         try:
+            #r1g=self.r1.get_next_goal()
             self.r1.mb_client.send_goal(self.r1.get_next_goal(), done_cb= self.r1_goal_reached)
+            #rospy.logwarn("Sending R1 to %s, %s", str(r1g.target_pose.pose.position.x), str(r1g.target_pose.pose.position.y))
+            
         except queue.Empty:
             self.r1.status = Robot_State.idle
             rospy.logwarn("No further goals for R1")
@@ -163,7 +172,9 @@ class Mission():
         rospy.logwarn("R3 reached reached one of the goals")
 
         try:
+            #r3g=self.r3.get_next_goal()
             self.r3.mb_client.send_goal(self.r3.get_next_goal(), done_cb= self.r3_goal_reached)
+            #rospy.logwarn("Sending R3 to %s, %s", str(r3g.target_pose.pose.position.x), str(r3g.target_pose.pose.position.y))
         except queue.Empty:
             self.r3.status = Robot_State.idle
             rospy.logwarn("No further goals for R3")
@@ -178,7 +189,8 @@ class Mission():
 
     def terminate_mission(self):
 
-        rospy.logwarn("finished")
+        rospy.logwarn("~~~~~~~ Mission finished~~~~~~~~")
+        rospy.logwarn("Status:  %s", str((self.r2.status).name))
         rospy.spin()
                 
 
